@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MrX-Stor</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap');
+        body {font-family: 'Cairo', sans-serif; background:#0A0A0A; color:white; margin:0; padding-bottom:85px;}
+        header {position:fixed; top:0; left:0; right:0; background:#0A0A0A; border-bottom:1px solid rgba(255,255,255,0.1); z-index:100;}
+        .header-content {max-width:640px; margin:0 auto; padding:16px 20px; display:flex; justify-content:space-between; align-items:center;}
+        .logo span {font-size:26px; font-weight:700;}
+        .logo .stor {color:#39FF14;}
+        .balance {background:rgba(255,255,255,0.08); padding:8px 16px; border-radius:50px; display:flex; align-items:center; gap:8px; font-size:15px;}
+        .screen {display:none; padding:20px;}
+        .screen.active {display:block;}
+        .card {background:rgba(255,255,255,0.06); backdrop-filter:blur(20px); border-radius:20px; padding:20px; margin-bottom:15px;}
+        .lime-btn {background:#39FF14; color:#000; font-weight:700; padding:18px; border-radius:20px; text-align:center; font-size:18px; width:100%; margin-top:20px;}
+        .bottom-nav {position:fixed; bottom:0; left:0; right:0; background:#0A0A0A; border-top:1px solid rgba(255,255,255,0.1); display:flex; justify-content:space-around; padding:12px 0; font-size:28px;}
+        .plus-btn {background:#39FF14; color:#000; width:68px; height:68px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:36px; margin-top:-35px; box-shadow:0 10px 30px rgba(57,255,20,0.4);}
+        h1 {font-size:28px; text-align:center; margin:20px 0;}
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="header-content">
+        <div class="logo"><span class="mr">MrX</span><span class="stor">Stor</span></div>
+        <div class="balance"><i class="fas fa-wallet"></i> <span id="balance">245.80$</span></div>
+    </div>
+</header>
+
+<main id="main-content">
+    <!-- الرئيسية -->
+    <div id="home" class="screen active">
+        <h1>مرحباً في MrX-Stor</h1>
+        <div class="card text-center">
+            <div style="font-size:50px;margin-bottom:10px;">⚡</div>
+            <h2>شحن فوري لكل الألعاب</h2>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;">
+            <div onclick="switchScreen('charge')" class="card text-center">🎮<br>الألعاب</div>
+            <div onclick="switchScreen('charge')" class="card text-center">💰<br>الرصيد</div>
+            <div onclick="switchScreen('charge')" class="card text-center">💬<br>التطبيقات</div>
+            <div onclick="switchScreen('charge')" class="card text-center">🎟️<br>أكواد</div>
+        </div>
+    </div>
+
+    <!-- طلباتي -->
+    <div id="orders" class="screen">
+        <h1>طلباتي</h1>
+        <div class="card">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+                <div>
+                    <div style="font-weight:600;">PUBG UC 500</div>
+                    <div style="font-size:13px;color:#aaa;">#MX-78492 • منذ ٣ ساعات</div>
+                </div>
+                <div style="text-align:right;">
+                    <div style="color:#39FF14;font-weight:700;">45$</div>
+                    <div style="background:#22c55e20;color:#22c55e;padding:4px 12px;border-radius:9999px;font-size:13px;">مكتمل</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- الشحن -->
+    <div id="charge" class="screen">
+        <h1>الشحن السريع</h1>
+        <div class="card">
+            <button onclick="completeCharge()" class="lime-btn">شحن الآن</button>
+        </div>
+    </div>
+
+    <!-- السجل -->
+    <div id="history" class="screen">
+        <h1>سجل الشحن</h1>
+        <div class="card">سيظهر سجل معاملاتك هنا</div>
+    </div>
+
+    <!-- الإيداع -->
+    <div id="deposit" class="screen">
+        <h1>إيداع شام كاش</h1>
+        <div class="card">
+            <p style="margin-bottom:8px;color:#aaa;">عنوان المحفظة</p>
+            <div style="background:#111;padding:15px;border-radius:12px;font-family:monospace;font-size:15px;word-break:break-all;">
+                7ee806564d3aa36d87667cad636b6788
+            </div>
+            <button onclick="copyWallet()" class="lime-btn" style="margin-top:15px;">نسخ العنوان</button>
+        </div>
+    </div>
+</main>
+
+<!-- Bottom Navigation -->
+<nav class="bottom-nav">
+    <button onclick="switchScreen('home')">🏠</button>
+    <button onclick="switchScreen('orders')">📋</button>
+    <button onclick="switchScreen('charge')" class="plus-btn">+</button>
+    <button onclick="switchScreen('history')">🕒</button>
+    <button onclick="switchScreen('deposit')">💳</button>
+</nav>
+
+<script>
+Telegram.WebApp.ready();
+Telegram.WebApp.expand();
+Telegram.WebApp.setHeaderColor("#0A0A0A");
+
+function switchScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+}
+
+function copyWallet() {
+    navigator.clipboard.writeText("7ee806564d3aa36d87667cad636b6788");
+    Telegram.WebApp.showPopup({message: "✅ تم نسخ العنوان بنجاح"});
+}
+
+function completeCharge() {
+    Telegram.WebApp.showAlert("🎉 تم الشحن بنجاح!\nالرصيد سيصل خلال ثوانٍ");
+}
+
+window.onload = () => switchScreen('home');
+</script>
+</body>
+</html>
